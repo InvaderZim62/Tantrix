@@ -56,15 +56,23 @@
 		4AD22A0626B616D700DC1F9C /* Tantrix */ = {
 			isa = PBXGroup;
 			children = (
-				4AD22A0726B616D700DC1F9C /* AppDelegate.swift */,
-				4AD22A0926B616D700DC1F9C /* SceneDelegate.swift */,
-				4AD22A0B26B616D700DC1F9C /* ViewController.swift */,
 				4AD22A0D26B616D700DC1F9C /* Main.storyboard */,
-				4AD22A1026B616D900DC1F9C /* Assets.xcassets */,
-				4AD22A1226B616D900DC1F9C /* LaunchScreen.storyboard */,
+				4AD22A0B26B616D700DC1F9C /* ViewController.swift */,
+				4AD22A1B26B6170200DC1F9C /* Supporting Files */,
 				4AD22A1526B616D900DC1F9C /* Info.plist */,
 			);
 			path = Tantrix;
+			sourceTree = "<group>";
+		};
+		4AD22A1B26B6170200DC1F9C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4AD22A0726B616D700DC1F9C /* AppDelegate.swift */,
+				4AD22A0926B616D700DC1F9C /* SceneDelegate.swift */,
+				4AD22A1026B616D900DC1F9C /* Assets.xcassets */,
+				4AD22A1226B616D900DC1F9C /* LaunchScreen.storyboard */,
+			);
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
