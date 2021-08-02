@@ -60,6 +60,7 @@ class ViewController: UIViewController {
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
         if let tileView = recognizer.view {
             if recognizer.state == .began {
+                view.bringSubviewToFront(tileView)
                 continuousX = tileView.center.x
                 continuousY = tileView.center.y
             }
@@ -80,6 +81,7 @@ class ViewController: UIViewController {
     @objc func handleRotate(recognizer: UIRotationGestureRecognizer) {
         if let tileView = recognizer.view {
             if recognizer.state == .began {
+                view.bringSubviewToFront(tileView)
                 continuousAngle = atan2(tileView.transform.b, tileView.transform.a)  // current tileView angle
             }
             continuousAngle += recognizer.rotation
