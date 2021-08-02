@@ -10,7 +10,7 @@ import UIKit
 struct Constants {
     static let tileWidth = 130.0
     static let tileColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
-    static let rotationDeadband = 10.0
+    static let rotationDeadband = 10.CGrads  // 10 degrees in radians (CGFloat)
 }
 
 class ViewController: UIViewController {
@@ -51,9 +51,9 @@ class ViewController: UIViewController {
             continuousAngle += recognizer.rotation
             var snappedAngle = continuousAngle
             let wrap60 = continuousAngle.truncatingRemainder(dividingBy: 60.CGrads)
-            if abs(wrap60) < Constants.rotationDeadband.CGrads {
+            if abs(wrap60) < Constants.rotationDeadband {
                 snappedAngle -= wrap60
-            } else if abs(wrap60) > (60 - Constants.rotationDeadband).CGrads {
+            } else if abs(wrap60) > 60.CGrads - Constants.rotationDeadband {
                 snappedAngle += (continuousAngle < 0 ? -1 : 1) * 60.CGrads - wrap60
             }
             tileView.transform = CGAffineTransform(rotationAngle: snappedAngle)
