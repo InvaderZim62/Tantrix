@@ -9,7 +9,7 @@ import UIKit
 
 struct Constants {
     static let tileWidth = 130.0
-    static let tileColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
+    static let tileColor = #colorLiteral(red: 0, green: 0.5628422499, blue: 0.3188166618, alpha: 1)
     static let leftTileOffset: CGFloat = 20  // space between left tip of tile and left side of screen
     static let topTileOffset: CGFloat = 20  // space between top of tile and top of screen
     static let panningDeadband: CGFloat = 20.0  // how close before panning snaps into place in points
@@ -23,23 +23,30 @@ class ViewController: UIViewController {
     var continuousY: CGFloat = 0.0
 
     let tiles: [Tile<UIColor>] = [
-        Tile(number: 1, loopColor: .yellow, sideColors: [.blue, .red, .yellow, .yellow, .blue, .red]),
-        Tile(number: 2, loopColor: .yellow, sideColors: [.yellow, .blue, .red, .red, .blue, .yellow]),
-        Tile(number: 3, loopColor: .yellow, sideColors: [.blue, .yellow, .yellow, .red, .red, .blue]),
-        Tile(number: 4, loopColor: .red, sideColors: [.red, .blue, .red, .yellow, .blue, .yellow]),
+        Tile(number: 1, backColor: .yellow, sideColors: [.blue, .red, .yellow, .yellow, .blue, .red]),  // colors clockwise from top
+        Tile(number: 2, backColor: .yellow, sideColors: [.yellow, .blue, .red, .red, .blue, .yellow]),
+        Tile(number: 3, backColor: .yellow, sideColors: [.blue, .yellow, .yellow, .red, .red, .blue]),
+        Tile(number: 4, backColor: .red, sideColors: [.red, .blue, .red, .yellow, .blue, .yellow]),
+        Tile(number: 5, backColor: .red, sideColors: [.yellow, .red, .blue, .blue, .red, .yellow]),
+        Tile(number: 6, backColor: .blue, sideColors: [.blue, .yellow, .blue, .red, .yellow, .red]),
+        Tile(number: 7, backColor: .red, sideColors: [.yellow, .red, .blue, .blue, .yellow, .red]),
+        Tile(number: 8, backColor: .blue, sideColors: [.red, .yellow, .blue, .blue, .red, .yellow]),
+        Tile(number: 9, backColor: .yellow, sideColors: [.blue, .red, .blue, .yellow, .red, .yellow]),
+        Tile(number: 10, backColor: .blue, sideColors: [.red, .blue, .yellow, .yellow, .red, .blue])
     ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        for index in 0..<4 {
+        for index in 0..<10 {
             addTileView(index: index)
         }
     }
     
-    // for now, this just creates a tile using the colors from tiles[index] and
-    // places it tileWidth * (index + 1) pixels from top of screen
+    // create tile using the colors from tiles[index] and place left to right, top to bottom
     private func addTileView(index: Int) {
-        let frame = CGRect(x: 100, y: Constants.tileWidth * Double(index + 1), width: Constants.tileWidth, height: Constants.tileWidth * cos(30.rads))
+        let col = index % 2 == 0 ? 0 : 1  // even: 0, odd: 1
+        let row = Int(Double(index) / 2)
+        let frame = CGRect(x: 50 + Double(160 * col), y: 40 + Double(120 * row), width: Constants.tileWidth, height: Constants.tileWidth * cos(30.rads))
         let tileView = TileView(frame: frame)
         tileView.sideColors = tiles[index].sideColors
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
