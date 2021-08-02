@@ -10,8 +10,10 @@ import UIKit
 struct Constants {
     static let tileWidth = 130.0
     static let tileColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
-    static let rotationDeadband = 10.CGrads  // 10 degrees in radians (CGFloat)
-    static let translationDeadband: CGFloat = 20.0
+    static let leftTileOffset: CGFloat = 20  // space between left tip of tile and left side of screen
+    static let topTileOffset: CGFloat = 20  // space between top of tile and top of screen
+    static let panningDeadband: CGFloat = 20.0  // how close before panning snaps into place in points
+    static let rotationDeadband = 10.CGrads  // how close before rotating snaps into place in radians (CGFloat)
 }
 
 class ViewController: UIViewController {
@@ -47,7 +49,7 @@ class ViewController: UIViewController {
         view.addSubview(tileView)
     }
     
-    // snap tile view position to even tile-spacing increments when with translationDeadband
+    // snap tile view position to even tile-spacing increments when with panningDeadband
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
         if let tileView = recognizer.view {
             if recognizer.state == .began {
@@ -57,12 +59,12 @@ class ViewController: UIViewController {
             // snap x position
             continuousX = recognizer.location(in: view).x
             let quarterWidth = tileView.bounds.width / 4
-            let snappedX = snap(continuousX, to: 3 * quarterWidth, deadband: Constants.translationDeadband, offset: 2 * quarterWidth)
+            let snappedX = snap(continuousX, to: 3 * quarterWidth, deadband: Constants.panningDeadband, offset: 2 * quarterWidth + Constants.leftTileOffset)
             tileView.center.x = snappedX
             // snap y position
             continuousY = recognizer.location(in: view).y
             let halfHeight = tileView.bounds.height / 2
-            let snappedY = snap(continuousY, to: halfHeight, deadband: Constants.translationDeadband, offset: halfHeight + 20)
+            let snappedY = snap(continuousY, to: halfHeight, deadband: Constants.panningDeadband, offset: halfHeight + Constants.topTileOffset)
             tileView.center.y = snappedY
         }
     }
@@ -86,7 +88,7 @@ class ViewController: UIViewController {
         if abs(wrap) < deadband {
             snappedProperty -= wrap
         } else if abs(wrap) > range - deadband {
-            snappedProperty += (property < 0 ? -1 : 1) * range - wrap
+            snappedProperty += (property - offset < 0 ? -1 : 1) * range - wrap
         }
         return snappedProperty
     }

@@ -15,6 +15,6 @@ import Foundation
 
 struct Tile<Color> {
     var number: Int  // tile number
-    var loopColor: Color
+    var backColor: Color
     var sideColors: [Color]
 }
