@@ -8,7 +8,7 @@
 import UIKit
 
 struct Constants {
-    static let tileWidth = 130.0
+    static let tileWidth = 120.0
     static let tileColor = #colorLiteral(red: 0, green: 0.5628422499, blue: 0.3188166618, alpha: 1)
     static let leftTileOffset: CGFloat = 20  // space between left tip of tile and left side of screen
     static let topTileOffset: CGFloat = 20  // space between top of tile and top of screen
@@ -21,6 +21,7 @@ class ViewController: UIViewController {
     var continuousAngle: CGFloat = 0.0
     var continuousX: CGFloat = 0.0
     var continuousY: CGFloat = 0.0
+    var tileViews = [TileView]()
 
     let tiles: [Tile<UIColor>] = [
         Tile(number: 1, backColor: .yellow, sideColors: [.blue, .red, .yellow, .yellow, .blue, .red]),  // colors clockwise from top
@@ -35,9 +36,28 @@ class ViewController: UIViewController {
         Tile(number: 10, backColor: .blue, sideColors: [.red, .blue, .yellow, .yellow, .red, .blue])
     ]
     
+    var numberOfTiles = 4 {
+        didSet {
+            numberOfTilesLabel.text = "\(numberOfTiles)"
+            goalLabel.text = "Goal: Form a single \(tiles[numberOfTiles - 1].backColor.name!) loop"
+            updateViewFromModel()
+        }
+    }
+
+    @IBOutlet weak var stepper: UIStepper!  // select number of tiles
+    @IBOutlet weak var numberOfTilesLabel: UILabel!
+    @IBOutlet weak var goalLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        for index in 0..<10 {
+        stepper.value = Double(numberOfTiles)
+        updateViewFromModel()
+    }
+    
+    private func updateViewFromModel() {
+//        view.subviews.forEach { if $0 is TileView { $0.removeFromSuperview() } }  // use this, if you don't need tileViews array
+        tileViews.forEach { $0.removeFromSuperview() }
+        for index in 0..<numberOfTiles {
             addTileView(index: index)
         }
     }
@@ -46,13 +66,14 @@ class ViewController: UIViewController {
     private func addTileView(index: Int) {
         let col = index % 2 == 0 ? 0 : 1  // even: 0, odd: 1
         let row = Int(Double(index) / 2)
-        let frame = CGRect(x: 50 + Double(160 * col), y: 40 + Double(120 * row), width: Constants.tileWidth, height: Constants.tileWidth * cos(30.rads))
+        let frame = CGRect(x: 50 + Double(160 * col), y: 100 + Double(115 * row), width: Constants.tileWidth, height: Constants.tileWidth * cos(30.rads))
         let tileView = TileView(frame: frame)
         tileView.sideColors = tiles[index].sideColors
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         tileView.addGestureRecognizer(pan)
         let rotate = UIRotationGestureRecognizer(target: self, action: #selector(handleRotate))
         tileView.addGestureRecognizer(rotate)
+        tileViews.append(tileView)
         view.addSubview(tileView)
     }
     
@@ -101,5 +122,8 @@ class ViewController: UIViewController {
         }
         return snappedProperty
     }
+    
+    @IBAction func stepperChanged(_ sender: UIStepper) {
+        numberOfTiles = Int(sender.value)
+    }
 }
-

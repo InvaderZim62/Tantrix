@@ -16,9 +16,51 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="HoW-6h-Ucr">
+                                <rect key="frame" x="59" y="8" width="257.5" height="32"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Number of Tiles" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HfB-pT-3ZP">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="32"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="4" minimumValue="3" maximumValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="WXu-LZ-6V4">
+                                        <rect key="frame" x="140" y="0.0" width="94" height="32"/>
+                                        <connections>
+                                            <action selector="stepperChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="uUN-lL-goZ"/>
+                                        </connections>
+                                    </stepper>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sPg-ii-UKf">
+                                        <rect key="frame" x="246" y="0.0" width="11.5" height="32"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Goal: Form a single red loop" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dus-jp-f0F">
+                                <rect key="frame" x="75.5" y="48" width="224" height="21.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemGray3Color"/>
+                        <constraints>
+                            <constraint firstItem="HoW-6h-Ucr" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="48O-ey-rk2"/>
+                            <constraint firstItem="HoW-6h-Ucr" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="4Sj-j9-QmG"/>
+                            <constraint firstItem="dus-jp-f0F" firstAttribute="top" secondItem="HoW-6h-Ucr" secondAttribute="bottom" constant="8" symbolic="YES" id="UNr-Ye-Wp2"/>
+                            <constraint firstItem="dus-jp-f0F" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="V7e-IV-njb"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="goalLabel" destination="dus-jp-f0F" id="eG4-Zd-SjW"/>
+                        <outlet property="numberOfTilesLabel" destination="sPg-ii-UKf" id="c1L-zv-Nac"/>
+                        <outlet property="stepper" destination="WXu-LZ-6V4" id="8qJ-or-OmL"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
