@@ -4,20 +4,25 @@
 //
 //  Created by Phil Stern on 7/31/21.
 //
+//  To do...
+//  - draw tile slightly inside view, to allow room for outline
+//  - determine if puzzle is solved
+//  - have tile snap to nearest position/angle when done panning/rotating
+//
 
 import UIKit
 
 struct Constants {
-    static let tileWidth = 120.0
     static let tileColor = #colorLiteral(red: 0, green: 0.5628422499, blue: 0.3188166618, alpha: 1)
     static let leftTileOffset: CGFloat = 20  // space between left tip of tile and left side of screen
     static let topTileOffset: CGFloat = 20  // space between top of tile and top of screen
     static let panningDeadband: CGFloat = 20.0  // how close before panning snaps into place in points
-    static let rotationDeadband = 10.CGrads  // how close before rotating snaps into place in radians (CGFloat)
+    static let rotationDeadband = 14.CGrads  // how close before rotating snaps into place in radians (CGFloat)
 }
 
 class ViewController: UIViewController {
 
+    var tileWidth: CGFloat = 120.0  // iPhone
     var continuousAngle: CGFloat = 0.0
     var continuousX: CGFloat = 0.0
     var continuousY: CGFloat = 0.0
@@ -47,9 +52,11 @@ class ViewController: UIViewController {
     @IBOutlet weak var stepper: UIStepper!  // select number of tiles
     @IBOutlet weak var numberOfTilesLabel: UILabel!
     @IBOutlet weak var goalLabel: UILabel!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("width: \(view.bounds.width)")
+        tileWidth = 0.15 * view.bounds.width + 64
         stepper.value = Double(numberOfTiles)
         updateViewFromModel()
     }
@@ -64,10 +71,13 @@ class ViewController: UIViewController {
     
     // create tile using the colors from tiles[index] and place left to right, top to bottom
     private func addTileView(index: Int) {
-        let col = index % 2 == 0 ? 0 : 1  // even: 0, odd: 1
+        let col = index % 2 == 0 ? -1 : 1  // even: -1, odd: 1
         let row = Int(Double(index) / 2)
-        let frame = CGRect(x: 50 + Double(160 * col), y: 100 + Double(115 * row), width: Constants.tileWidth, height: Constants.tileWidth * cos(30.rads))
-        let tileView = TileView(frame: frame)
+        let topSpace: CGFloat = 40.0
+        let heightOver5 = (view.bounds.height - topSpace) / 5.6
+        let tileView = TileView(frame: CGRect(x: 0, y: 0, width: tileWidth, height: tileWidth * cos(30.CGrads)))
+        tileView.center = CGPoint(x: view.bounds.midX + (tileWidth / 2 + 20) * CGFloat(col),
+                                  y: topSpace + heightOver5 * CGFloat(row + 1))
         tileView.sideColors = tiles[index].sideColors
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         tileView.addGestureRecognizer(pan)
@@ -77,7 +87,7 @@ class ViewController: UIViewController {
         view.addSubview(tileView)
     }
     
-    // snap tile view position to even tile-spacing increments when with panningDeadband
+    // snap tile view position to even tile-spacing increments when within panningDeadband
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
         if let tileView = recognizer.view {
             if recognizer.state == .began {
@@ -98,7 +108,7 @@ class ViewController: UIViewController {
         }
     }
     
-    // snap tile view rotation to 60 degree increments when with rotationDeadband
+    // snap tile view rotation to 60 degree increments when within rotationDeadband
     @objc func handleRotate(recognizer: UIRotationGestureRecognizer) {
         if let tileView = recognizer.view {
             if recognizer.state == .began {
