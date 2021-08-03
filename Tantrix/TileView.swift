@@ -33,21 +33,27 @@ class TileView: UIView {
     
     private func drawHexagon() {
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
+        let cornerRadius = (bounds.width - Constants.tileOutlineWidth) / 2  // from center to corner
         let hexagon = UIBezierPath()
-        hexagon.move(to: CGPoint(x: center.x + bounds.width / 2 * sin(-30.CGrads),
-                                 y: center.y - bounds.width / 2 * cos(-30.CGrads)))
+        // move to top left corner (-30 degrees)
+        hexagon.move(to: CGPoint(x: center.x + cornerRadius * sin(-30.CGrads),
+                                 y: center.y - cornerRadius * cos(-30.CGrads)))
+        // add line to each corner going clockwise (every 60 degrees)
         for angleDegrees in stride(from: 30.0, through: 330.0, by: 60.0) {
             let angleRadians = angleDegrees.CGrads
-            hexagon.addLine(to: CGPoint(x: center.x + bounds.width / 2 * sin(angleRadians),
-                                        y: center.y - bounds.width / 2 * cos(angleRadians)))
+            hexagon.addLine(to: CGPoint(x: center.x + cornerRadius * sin(angleRadians),
+                                        y: center.y - cornerRadius * cos(angleRadians)))
         }
-        Constants.tileColor.setFill()
+        Constants.tileBackgroundColor.setFill()
         hexagon.fill()
+        UIColor.black.setStroke()
+        hexagon.lineWidth = Constants.tileOutlineWidth
+        hexagon.stroke()
     }
     
     private func drawCurves() {
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
-        let sideRadius = bounds.width / 2 * cos(30.CGrads)  // from center to midpoint of side
+        let sideRadius = bounds.width / 2 * cos(30.CGrads) - Constants.tileOutlineWidth  // from center to midpoint of side
         var sideMidPoints = [CGPoint]()
         var controlPoints = [CGPoint]()  // half way between center and sideMidPoints
         for angleDegrees in stride(from: 0.0, through: 320.0, by: 60.0) {

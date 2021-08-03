@@ -5,7 +5,6 @@
 //  Created by Phil Stern on 7/31/21.
 //
 //  To do...
-//  - draw tile slightly inside view, to allow room for outline
 //  - determine if puzzle is solved
 //  - have tile snap to nearest position/angle when done panning/rotating
 //
@@ -13,7 +12,8 @@
 import UIKit
 
 struct Constants {
-    static let tileColor = #colorLiteral(red: 0, green: 0.5628422499, blue: 0.3188166618, alpha: 1)
+    static let tileBackgroundColor = #colorLiteral(red: 0, green: 0.5628422499, blue: 0.3188166618, alpha: 1)
+    static let tileOutlineWidth: CGFloat = 1.0
     static let leftTileOffset: CGFloat = 20  // space between left tip of tile and left side of screen
     static let topTileOffset: CGFloat = 20  // space between top of tile and top of screen
     static let panningDeadband: CGFloat = 20.0  // how close before panning snaps into place in points
@@ -55,7 +55,6 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("width: \(view.bounds.width)")
         tileWidth = 0.15 * view.bounds.width + 64
         stepper.value = Double(numberOfTiles)
         updateViewFromModel()
@@ -73,7 +72,7 @@ class ViewController: UIViewController {
     private func addTileView(index: Int) {
         let col = index.isEven ? -1 : 1
         let row = Int(Double(index) / 2)
-        let topSpace: CGFloat = 40.0
+        let topSpace: CGFloat = 40
         let heightOver5 = (view.bounds.height - topSpace) / 5.6
         let tileView = TileView(frame: CGRect(x: 0, y: 0, width: tileWidth, height: tileWidth * cos(30.CGrads)))
         tileView.center = CGPoint(x: view.bounds.midX + (tileWidth / 2 + 20) * CGFloat(col),
