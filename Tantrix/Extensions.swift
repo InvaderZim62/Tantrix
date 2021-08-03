@@ -35,6 +35,12 @@ extension Double {
     }
 }
 
+extension Int {
+    var isEven: Bool {
+        return self % 2 == 0
+    }
+}
+
 // from: https://stackoverflow.com/questions/44672594
 // usage: print(UIColor.red.name)
 extension UIColor {

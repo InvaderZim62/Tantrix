@@ -71,7 +71,7 @@ class ViewController: UIViewController {
     
     // create tile using the colors from tiles[index] and place left to right, top to bottom
     private func addTileView(index: Int) {
-        let col = index % 2 == 0 ? -1 : 1  // even: -1, odd: 1
+        let col = index.isEven ? -1 : 1
         let row = Int(Double(index) / 2)
         let topSpace: CGFloat = 40.0
         let heightOver5 = (view.bounds.height - topSpace) / 5.6
