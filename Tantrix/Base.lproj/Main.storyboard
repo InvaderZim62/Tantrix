@@ -46,28 +46,37 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Puzzle Complete!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Tp-1o-Vah">
-                                <rect key="frame" x="111" y="79.5" width="153.5" height="24"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ixZ-0i-HKp">
+                                <rect key="frame" x="100.5" y="315.5" width="174" height="36"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                                <inset key="contentEdgeInsets" minX="10" minY="6" maxX="10" maxY="6"/>
+                                <state key="normal" title="Puzzle Complete!"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="14"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="puzzleCompleteButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bYE-aU-GBw"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemGray3Color"/>
                         <constraints>
                             <constraint firstItem="HoW-6h-Ucr" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="48O-ey-rk2"/>
+                            <constraint firstItem="ixZ-0i-HKp" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="4Gz-h9-khc"/>
                             <constraint firstItem="HoW-6h-Ucr" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="4Sj-j9-QmG"/>
-                            <constraint firstItem="9Tp-1o-Vah" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="H5n-rX-hgH"/>
+                            <constraint firstItem="ixZ-0i-HKp" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="LRz-cX-RoR"/>
                             <constraint firstItem="dus-jp-f0F" firstAttribute="top" secondItem="HoW-6h-Ucr" secondAttribute="bottom" constant="8" symbolic="YES" id="UNr-Ye-Wp2"/>
                             <constraint firstItem="dus-jp-f0F" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="V7e-IV-njb"/>
-                            <constraint firstItem="9Tp-1o-Vah" firstAttribute="top" secondItem="dus-jp-f0F" secondAttribute="bottom" constant="7.5" id="zBF-4y-con"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="goalLabel" destination="dus-jp-f0F" id="eG4-Zd-SjW"/>
                         <outlet property="numberOfTilesLabel" destination="sPg-ii-UKf" id="c1L-zv-Nac"/>
-                        <outlet property="puzzleCompleteLabel" destination="9Tp-1o-Vah" id="6Ze-tm-N5I"/>
+                        <outlet property="puzzleCompleteButton" destination="ixZ-0i-HKp" id="rVv-nr-w6f"/>
                         <outlet property="stepper" destination="WXu-LZ-6V4" id="8qJ-or-OmL"/>
                     </connections>
                 </viewController>

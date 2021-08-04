@@ -63,7 +63,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var stepper: UIStepper!  // select number of tiles
     @IBOutlet weak var numberOfTilesLabel: UILabel!
     @IBOutlet weak var goalLabel: UILabel!
-    @IBOutlet weak var puzzleCompleteLabel: UILabel!
+    @IBOutlet weak var puzzleCompleteButton: UIButton!
     
     // MARK: - Start of code
     
@@ -75,7 +75,7 @@ class ViewController: UIViewController {
     }
     
     private func updateViewFromModel() {
-        puzzleCompleteLabel.isHidden = true
+        puzzleCompleteButton.isHidden = true
         tileViews.forEach { $0.removeFromSuperview() }
         tileViews.removeAll()
         for index in 0..<numberOfTilesInPlay {
@@ -106,6 +106,7 @@ class ViewController: UIViewController {
         if let tileView = recognizer.view as? TileView{
             switch recognizer.state {
             case .began:
+                puzzleCompleteButton.isHidden = true
                 view.bringSubviewToFront(tileView)
                 continuousX = tileView.center.x
                 continuousY = tileView.center.y
@@ -121,7 +122,10 @@ class ViewController: UIViewController {
                 let snappedY = snap(continuousY, to: halfHeight, deadband: Constants.panningDeadband, offset: halfHeight + Constants.topTileOffset)
                 tileView.center.y = snappedY
             case .ended:
-                puzzleCompleteLabel.isHidden = !isPuzzleComplete()
+                if isPuzzleComplete() {
+                    puzzleCompleteButton.isHidden = false
+                    view.bringSubviewToFront(puzzleCompleteButton)
+                }
             default:
                 break
             }
@@ -133,6 +137,7 @@ class ViewController: UIViewController {
         if let tileView = recognizer.view as? TileView {
             switch recognizer.state {
             case .began:
+                puzzleCompleteButton.isHidden = true
                 view.bringSubviewToFront(tileView)
                 continuousAngle = tileView.angle
             case .changed:
@@ -141,7 +146,10 @@ class ViewController: UIViewController {
                 tileView.transform = CGAffineTransform(rotationAngle: snappedAngle)
                 recognizer.rotation = 0  // reset, to use incremental rotations
             case .ended:
-                puzzleCompleteLabel.isHidden = !isPuzzleComplete()
+                if isPuzzleComplete() {
+                    puzzleCompleteButton.isHidden = false
+                    view.bringSubviewToFront(puzzleCompleteButton)
+                }
             default:
                 break
             }
@@ -189,5 +197,9 @@ class ViewController: UIViewController {
     
     @IBAction func stepperChanged(_ sender: UIStepper) {
         numberOfTilesInPlay = Int(sender.value)
+    }
+    
+    @IBAction func puzzleCompleteButtonPressed(_ sender: UIButton) {
+        puzzleCompleteButton.isHidden = true
     }
 }
