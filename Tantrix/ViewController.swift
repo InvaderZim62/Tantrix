@@ -118,6 +118,18 @@ class ViewController: UIViewController {
                 let snappedY = snap(continuousY, to: halfHeight, deadband: Constants.panningDeadband, offset: halfHeight + Constants.topTileOffset)
                 tileView.center.y = snappedY
             case .ended:
+                // when done moving, snap to nearest point by setting deadband = half range
+                // snap x position
+                let continuousX = recognizer.location(in: view).x
+                let quarterWidth = tileView.bounds.width / 4
+                let snappedX = snap(continuousX, to: 3 * quarterWidth, deadband: 3 * quarterWidth / 2, offset: 2 * quarterWidth + Constants.leftTileOffset)
+                tileView.center.x = snappedX
+                // snap y position
+                let continuousY = recognizer.location(in: view).y
+                let halfHeight = tileView.bounds.height / 2
+                let snappedY = snap(continuousY, to: halfHeight, deadband: halfHeight / 2, offset: halfHeight + Constants.topTileOffset)
+                tileView.center.y = snappedY
+                
                 if isPuzzleComplete() {
                     puzzleCompleteButton.isHidden = false
                     view.bringSubviewToFront(puzzleCompleteButton)
@@ -142,6 +154,11 @@ class ViewController: UIViewController {
                 tileView.transform = CGAffineTransform(rotationAngle: snappedAngle)
                 recognizer.rotation = 0  // reset, to use incremental rotations
             case .ended:
+                // when done moving, snap to nearest angle by setting deadband = half range
+                continuousAngle += recognizer.rotation
+                let snappedAngle = snap(continuousAngle, to: 60.CGrads, deadband: 30.CGrads, offset: 0)
+                tileView.transform = CGAffineTransform(rotationAngle: snappedAngle)
+                
                 if isPuzzleComplete() {
                     puzzleCompleteButton.isHidden = false
                     view.bringSubviewToFront(puzzleCompleteButton)
