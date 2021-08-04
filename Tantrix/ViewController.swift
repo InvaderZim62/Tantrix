@@ -23,8 +23,6 @@ class ViewController: UIViewController {
 
     var tileWidth: CGFloat = 0.0
     var continuousAngle: CGFloat = 0.0
-    var continuousX: CGFloat = 0.0
-    var continuousY: CGFloat = 0.0
     var tileViews = [TileView]()
 
     let tiles: [Tile<UIColor>] = [
@@ -108,16 +106,14 @@ class ViewController: UIViewController {
             case .began:
                 puzzleCompleteButton.isHidden = true
                 view.bringSubviewToFront(tileView)
-                continuousX = tileView.center.x
-                continuousY = tileView.center.y
             case .changed:
                 // snap x position
-                continuousX = recognizer.location(in: view).x
+                let continuousX = recognizer.location(in: view).x
                 let quarterWidth = tileView.bounds.width / 4
                 let snappedX = snap(continuousX, to: 3 * quarterWidth, deadband: Constants.panningDeadband, offset: 2 * quarterWidth + Constants.leftTileOffset)
                 tileView.center.x = snappedX
                 // snap y position
-                continuousY = recognizer.location(in: view).y
+                let continuousY = recognizer.location(in: view).y
                 let halfHeight = tileView.bounds.height / 2
                 let snappedY = snap(continuousY, to: halfHeight, deadband: Constants.panningDeadband, offset: halfHeight + Constants.topTileOffset)
                 tileView.center.y = snappedY
@@ -156,15 +152,15 @@ class ViewController: UIViewController {
         }
     }
     
-    private func snap(_ property: CGFloat, to range: CGFloat, deadband: CGFloat, offset: CGFloat) -> CGFloat {
-        var snappedProperty = property
-        let wrap = (property - offset).truncatingRemainder(dividingBy: range)
+    private func snap(_ value: CGFloat, to range: CGFloat, deadband: CGFloat, offset: CGFloat) -> CGFloat {
+        var snappedValue = value
+        let wrap = (value - offset).truncatingRemainder(dividingBy: range)  // modulo range
         if abs(wrap) < deadband {
-            snappedProperty -= wrap
+            snappedValue -= wrap
         } else if abs(wrap) > range - deadband {
-            snappedProperty += (property - offset < 0 ? -1 : 1) * range - wrap
+            snappedValue += (value - offset < 0 ? -1 : 1) * range - wrap
         }
-        return snappedProperty
+        return snappedValue
     }
     
     // puzzle is complete if loop color can be traced through all adjecent tileViews
