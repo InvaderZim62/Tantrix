@@ -5,7 +5,6 @@
 //  Created by Phil Stern on 7/31/21.
 //
 //  To do...
-//  - determine if puzzle is solved
 //  - have tile snap to nearest position/angle when done panning/rotating
 //
 
@@ -14,15 +13,15 @@ import UIKit
 struct Constants {
     static let tileBackgroundColor = #colorLiteral(red: 0, green: 0.5628422499, blue: 0.3188166618, alpha: 1)
     static let tileOutlineWidth: CGFloat = 1.0
-    static let leftTileOffset: CGFloat = 20  // space between left tip of tile and left side of screen
-    static let topTileOffset: CGFloat = 20  // space between top of tile and top of screen
-    static let panningDeadband: CGFloat = 20.0  // how close before panning snaps into place in points
-    static let rotationDeadband = 14.CGrads  // how close before rotating snaps into place in radians (CGFloat)
+    static let leftTileOffset: CGFloat = 20  // starting space between left tip of tile and left side of screen
+    static let topTileOffset: CGFloat = 20  // starting space between top of tile and top of screen
+    static let panningDeadband: CGFloat = 20.0  // how close before panning snaps into place, in points
+    static let rotationDeadband = 14.CGrads  // how close before rotating snaps into place, in radians (CGFloat)
 }
 
 class ViewController: UIViewController {
 
-    var tileWidth: CGFloat = 120.0  // iPhone
+    var tileWidth: CGFloat = 0.0
     var continuousAngle: CGFloat = 0.0
     var continuousX: CGFloat = 0.0
     var continuousY: CGFloat = 0.0
@@ -41,29 +40,45 @@ class ViewController: UIViewController {
         Tile(number: 10, backColor: .blue, sideColors: [.red, .blue, .yellow, .yellow, .red, .blue])
     ]
     
-    var numberOfTiles = 4 {
+    var numberOfTilesInPlay = 4 {
         didSet {
-            numberOfTilesLabel.text = "\(numberOfTiles)"
-            goalLabel.text = "Goal: Form a single \(tiles[numberOfTiles - 1].backColor.name!) loop"
+            numberOfTilesLabel.text = "\(numberOfTilesInPlay)"
+            goalLabel.text = "Goal: Form a single \(loopColor.name!) loop"
             updateViewFromModel()
         }
+    }
+    
+    var loopColor: UIColor {
+        return tiles[numberOfTilesInPlay - 1].backColor  // loop color is back color of highest numbered tile in play
+    }
+    
+    var tileHeight: CGFloat {
+        return tileWidth * cos(30.CGrads)
+    }
+    
+    var touchingTileDistance: CGFloat {  // distance between centers
+        return tileHeight
     }
 
     @IBOutlet weak var stepper: UIStepper!  // select number of tiles
     @IBOutlet weak var numberOfTilesLabel: UILabel!
     @IBOutlet weak var goalLabel: UILabel!
+    @IBOutlet weak var puzzleCompleteLabel: UILabel!
+    
+    // MARK: - Start of code
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tileWidth = 0.15 * view.bounds.width + 64
-        stepper.value = Double(numberOfTiles)
+        stepper.value = Double(numberOfTilesInPlay)
         updateViewFromModel()
     }
     
     private func updateViewFromModel() {
-//        view.subviews.forEach { if $0 is TileView { $0.removeFromSuperview() } }  // use this, if you don't need tileViews array
+        puzzleCompleteLabel.isHidden = true
         tileViews.forEach { $0.removeFromSuperview() }
-        for index in 0..<numberOfTiles {
+        tileViews.removeAll()
+        for index in 0..<numberOfTilesInPlay {
             addTileView(index: index)
         }
     }
@@ -74,7 +89,7 @@ class ViewController: UIViewController {
         let row = Int(Double(index) / 2)
         let topSpace: CGFloat = 40
         let heightOver5 = (view.bounds.height - topSpace) / 5.6
-        let tileView = TileView(frame: CGRect(x: 0, y: 0, width: tileWidth, height: tileWidth * cos(30.CGrads)))
+        let tileView = TileView(frame: CGRect(x: 0, y: 0, width: tileWidth, height: tileHeight))
         tileView.center = CGPoint(x: view.bounds.midX + (tileWidth / 2 + 20) * CGFloat(col),
                                   y: topSpace + heightOver5 * CGFloat(row + 1))
         tileView.sideColors = tiles[index].sideColors
@@ -88,36 +103,48 @@ class ViewController: UIViewController {
     
     // snap tile view position to even tile-spacing increments when within panningDeadband
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
-        if let tileView = recognizer.view {
-            if recognizer.state == .began {
+        if let tileView = recognizer.view as? TileView{
+            switch recognizer.state {
+            case .began:
                 view.bringSubviewToFront(tileView)
                 continuousX = tileView.center.x
                 continuousY = tileView.center.y
+            case .changed:
+                // snap x position
+                continuousX = recognizer.location(in: view).x
+                let quarterWidth = tileView.bounds.width / 4
+                let snappedX = snap(continuousX, to: 3 * quarterWidth, deadband: Constants.panningDeadband, offset: 2 * quarterWidth + Constants.leftTileOffset)
+                tileView.center.x = snappedX
+                // snap y position
+                continuousY = recognizer.location(in: view).y
+                let halfHeight = tileView.bounds.height / 2
+                let snappedY = snap(continuousY, to: halfHeight, deadband: Constants.panningDeadband, offset: halfHeight + Constants.topTileOffset)
+                tileView.center.y = snappedY
+            case .ended:
+                puzzleCompleteLabel.isHidden = !isPuzzleComplete()
+            default:
+                break
             }
-            // snap x position
-            continuousX = recognizer.location(in: view).x
-            let quarterWidth = tileView.bounds.width / 4
-            let snappedX = snap(continuousX, to: 3 * quarterWidth, deadband: Constants.panningDeadband, offset: 2 * quarterWidth + Constants.leftTileOffset)
-            tileView.center.x = snappedX
-            // snap y position
-            continuousY = recognizer.location(in: view).y
-            let halfHeight = tileView.bounds.height / 2
-            let snappedY = snap(continuousY, to: halfHeight, deadband: Constants.panningDeadband, offset: halfHeight + Constants.topTileOffset)
-            tileView.center.y = snappedY
         }
     }
     
     // snap tile view rotation to 60 degree increments when within rotationDeadband
     @objc func handleRotate(recognizer: UIRotationGestureRecognizer) {
-        if let tileView = recognizer.view {
-            if recognizer.state == .began {
+        if let tileView = recognizer.view as? TileView {
+            switch recognizer.state {
+            case .began:
                 view.bringSubviewToFront(tileView)
-                continuousAngle = atan2(tileView.transform.b, tileView.transform.a)  // current tileView angle
+                continuousAngle = tileView.angle
+            case .changed:
+                continuousAngle += recognizer.rotation
+                let snappedAngle = snap(continuousAngle, to: 60.CGrads, deadband: Constants.rotationDeadband, offset: 0)
+                tileView.transform = CGAffineTransform(rotationAngle: snappedAngle)
+                recognizer.rotation = 0  // reset, to use incremental rotations
+            case .ended:
+                puzzleCompleteLabel.isHidden = !isPuzzleComplete()
+            default:
+                break
             }
-            continuousAngle += recognizer.rotation
-            let snappedAngle = snap(continuousAngle, to: 60.CGrads, deadband: Constants.rotationDeadband, offset: 0)
-            tileView.transform = CGAffineTransform(rotationAngle: snappedAngle)
-            recognizer.rotation = 0  // reset, to use incremental rotations
         }
     }
     
@@ -132,7 +159,35 @@ class ViewController: UIViewController {
         return snappedProperty
     }
     
+    // puzzle is complete if loop color can be traced through all adjecent tileViews
+    private func isPuzzleComplete() -> Bool {
+        var tilesChecked = 0
+        var testTileView = tileViews[0]
+        var pastLoopColorSide = 0
+        while tilesChecked < numberOfTilesInPlay {
+            let testTileLoopColorSides = testTileView.rotatedSideColors.indices.filter { testTileView.rotatedSideColors[$0] == loopColor }
+            let loopColorSide = testTileLoopColorSides[0] == pastLoopColorSide ? testTileLoopColorSides[1] : testTileLoopColorSides[0]
+            let sideAngle = CGFloat(Tile<Any>.angleOf(side: loopColorSide))  // radians
+            let neighboringCenter = testTileView.center + CGPoint(x: touchingTileDistance * sin(sideAngle),
+                                                                  y: -touchingTileDistance * cos(sideAngle))
+            let neighboringTileView = tileViews.filter {
+                abs($0.center.x - neighboringCenter.x) < Constants.panningDeadband / 2 &&
+                abs($0.center.y - neighboringCenter.y) < Constants.panningDeadband / 2
+            }.first
+            if let neighboringTileView = neighboringTileView, neighboringTileView.rotatedSideColors[Tile<Any>.oppositeSide(loopColorSide)] == loopColor {
+                testTileView = neighboringTileView
+                pastLoopColorSide = Tile<Any>.oppositeSide(loopColorSide)
+                tilesChecked += 1
+            } else {
+                break
+            }
+        }
+        return tilesChecked == numberOfTilesInPlay
+    }
+    
+    // MARK: - IBActions
+    
     @IBAction func stepperChanged(_ sender: UIStepper) {
-        numberOfTiles = Int(sender.value)
+        numberOfTilesInPlay = Int(sender.value)
     }
 }

@@ -26,6 +26,21 @@ class TileView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var angle: CGFloat {
+        return atan2(self.transform.b, self.transform.a)
+    }
+    
+    var rotatedSideColors: [UIColor] {
+        let turnIncrements = Int(angle / 60.CGrads)
+        var rotatedSideColors = [UIColor]()
+        for index in 0..<6 {
+            let remainder = (index - turnIncrements) % 6
+            let modulo = remainder >= 0 ? remainder : remainder + 6
+            rotatedSideColors.append(sideColors[modulo])
+        }
+        return rotatedSideColors
+    }
+
     override func draw(_ rect: CGRect) {
         drawHexagon()
         drawCurves()

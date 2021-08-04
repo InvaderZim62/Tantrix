@@ -17,4 +17,12 @@ struct Tile<Color> {
     var number: Int  // tile number
     var backColor: Color
     var sideColors: [Color]
+    
+    static func angleOf(side: Int) -> Double {  // returns angle in radians
+        return 60.rads * Double(side)
+    }
+    
+    static func oppositeSide(_ side: Int) -> Int {
+        return (side + 3) % 6
+    }
 }
