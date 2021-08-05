@@ -195,7 +195,7 @@ class ViewController: UIViewController {
         var tilesChecked = 0
         var testTileView = tileViews[0]
         var pastLoopColorSide = 0
-        while tilesChecked < numberOfTilesInPlay {
+        repeat {
             let testTileLoopColorSides = testTileView.rotatedSideColors.indices.filter { testTileView.rotatedSideColors[$0] == loopColor }
             let loopColorSide = testTileLoopColorSides[0] == pastLoopColorSide ? testTileLoopColorSides[1] : testTileLoopColorSides[0]
             let sideAngle = CGFloat(Tile<Any>.angleOf(side: loopColorSide))  // radians
@@ -212,7 +212,8 @@ class ViewController: UIViewController {
             } else {
                 break
             }
-        }
+        } while testTileView != tileViews[0]
+        
         return tilesChecked == numberOfTilesInPlay
     }
     
