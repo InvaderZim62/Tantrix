@@ -41,10 +41,17 @@ class ViewController: UIViewController {
     var numberOfTilesInPlay = 4 {
         didSet {
             numberOfTilesLabel.text = "\(numberOfTilesInPlay)"
-            goalLabel.text = "Goal: Form a single \(loopColor.name!) loop"
-            updateViewFromModel()
+            let goalString = "Goal: Form a single \(loopColor.name!) loop"
+            let range = (goalString as NSString).range(of: loopColor.name!)
+            let attributedString = NSMutableAttributedString.init(string: goalString)
+            attributedString.addAttribute(.foregroundColor, value: loopColor == .blue ? UIColor.white : .black, range: range)
+            attributedString.addAttribute(.backgroundColor, value: loopColor, range: range)
+            goalLabel.attributedText = attributedString
+            resetTileViews()
         }
     }
+    
+    // MARK: - Computed properties
     
     var loopColor: UIColor {
         return tiles[numberOfTilesInPlay - 1].backColor  // loop color is back color of highest numbered tile in play
@@ -57,6 +64,8 @@ class ViewController: UIViewController {
     var touchingTileDistance: CGFloat {  // distance between centers
         return tileHeight
     }
+    
+    // MARK: - Outlets
 
     @IBOutlet weak var stepper: UIStepper!  // select number of tiles
     @IBOutlet weak var numberOfTilesLabel: UILabel!
@@ -68,11 +77,12 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tileWidth = 0.15 * view.bounds.width + 64
+        numberOfTilesInPlay = 4
         stepper.value = Double(numberOfTilesInPlay)
-        updateViewFromModel()
+        resetTileViews()
     }
     
-    private func updateViewFromModel() {
+    private func resetTileViews() {
         puzzleCompleteButton.isHidden = true
         tileViews.forEach { $0.removeFromSuperview() }
         tileViews.removeAll()
@@ -206,7 +216,7 @@ class ViewController: UIViewController {
         return tilesChecked == numberOfTilesInPlay
     }
     
-    // MARK: - IBActions
+    // MARK: - Actions
     
     @IBAction func stepperChanged(_ sender: UIStepper) {
         numberOfTilesInPlay = Int(sender.value)
