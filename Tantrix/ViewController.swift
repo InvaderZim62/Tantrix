@@ -4,9 +4,6 @@
 //
 //  Created by Phil Stern on 7/31/21.
 //
-//  To do...
-//  - have tile snap to nearest position/angle when done panning/rotating
-//
 
 import UIKit
 
@@ -38,7 +35,7 @@ class ViewController: UIViewController {
         Tile(number: 10, backColor: .blue, sideColors: [.red, .blue, .yellow, .yellow, .red, .blue])
     ]
     
-    var numberOfTilesInPlay = 4 {
+    var numberOfTilesInPlay = 4 {  // changed using stepper control
         didSet {
             numberOfTilesLabel.text = "\(numberOfTilesInPlay)"
             let goalString = "Goal: Form a single \(loopColor.name!) loop"
@@ -190,22 +187,30 @@ class ViewController: UIViewController {
         return snappedValue
     }
     
-    // puzzle is complete if loop color can be traced through all adjecent tileViews
     private func isPuzzleComplete() -> Bool {
+        return isLoopColorThroughAllTileViews() && isAllTouchingTileViewsWithSameColor()
+    }
+    
+    private func neighborTo(_ tileView: TileView, on side: Int) -> TileView? {
+        let sideAngle = CGFloat(Tile<Any>.angleOf(side: side))  // radians
+        let neighboringCenter = tileView.center + CGPoint(x: touchingTileDistance * sin(sideAngle),
+                                                          y: -touchingTileDistance * cos(sideAngle))
+        return tileViews.filter {
+            abs($0.center.x - neighboringCenter.x) < Constants.panningDeadband / 2 &&
+            abs($0.center.y - neighboringCenter.y) < Constants.panningDeadband / 2
+        }.first
+    }
+    
+    private func isLoopColorThroughAllTileViews() -> Bool {
         var tilesChecked = 0
         var testTileView = tileViews[0]
         var pastLoopColorSide = 0
         repeat {
             let testTileLoopColorSides = testTileView.rotatedSideColors.indices.filter { testTileView.rotatedSideColors[$0] == loopColor }
             let loopColorSide = testTileLoopColorSides[0] == pastLoopColorSide ? testTileLoopColorSides[1] : testTileLoopColorSides[0]
-            let sideAngle = CGFloat(Tile<Any>.angleOf(side: loopColorSide))  // radians
-            let neighboringCenter = testTileView.center + CGPoint(x: touchingTileDistance * sin(sideAngle),
-                                                                  y: -touchingTileDistance * cos(sideAngle))
-            let neighboringTileView = tileViews.filter {
-                abs($0.center.x - neighboringCenter.x) < Constants.panningDeadband / 2 &&
-                abs($0.center.y - neighboringCenter.y) < Constants.panningDeadband / 2
-            }.first
-            if let neighboringTileView = neighboringTileView, neighboringTileView.rotatedSideColors[Tile<Any>.oppositeSide(loopColorSide)] == loopColor {
+            // check if there is a neighboring tileView and if it has loopColor on the opposite side as testTileView (if so, continue cheking)
+            if let neighboringTileView = neighborTo(testTileView, on: loopColorSide),
+               neighboringTileView.rotatedSideColors[Tile<Any>.oppositeSide(loopColorSide)] == loopColor {
                 testTileView = neighboringTileView
                 pastLoopColorSide = Tile<Any>.oppositeSide(loopColorSide)
                 tilesChecked += 1
@@ -215,6 +220,19 @@ class ViewController: UIViewController {
         } while testTileView != tileViews[0]
         
         return tilesChecked == numberOfTilesInPlay
+    }
+    
+    private func isAllTouchingTileViewsWithSameColor() -> Bool {
+        for tileView in tileViews {
+            for side in 0..<6 {
+                // check if there is a neigboring tileView and if it has same color on opposite side as this tileView (if not return false)
+                if let neighboringTileView = neighborTo(tileView, on: side),
+                   neighboringTileView.rotatedSideColors[Tile<Any>.oppositeSide(side)] != tileView.rotatedSideColors[side] {
+                    return false
+                }
+            }
+        }
+        return true
     }
     
     // MARK: - Actions
