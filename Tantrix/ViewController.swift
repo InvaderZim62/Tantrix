@@ -22,6 +22,7 @@ class ViewController: UIViewController {
     var continuousAngle: CGFloat = 0.0
     var tileViews = [TileView]()
 
+    // create ten potential game tiles
     let tiles: [Tile<UIColor>] = [
         Tile(number: 1, backColor: .yellow, sideColors: [.blue, .red, .yellow, .yellow, .blue, .red]),  // colors clockwise from top
         Tile(number: 2, backColor: .yellow, sideColors: [.yellow, .blue, .red, .red, .blue, .yellow]),
@@ -55,10 +56,10 @@ class ViewController: UIViewController {
     }
     
     var tileHeight: CGFloat {
-        return tileWidth * cos(30.CGrads)
+        return tileWidth * cos(30.CGrads)  // geometry of hexagon
     }
     
-    var touchingTileDistance: CGFloat {  // distance between centers
+    var touchingTileDistance: CGFloat {  // distance between touching tile centers (same in all directions)
         return tileHeight
     }
     
@@ -98,14 +99,29 @@ class ViewController: UIViewController {
         tileView.center = CGPoint(x: view.bounds.midX + (tileWidth / 2 + 20) * CGFloat(col),
                                   y: topSpace + heightOver5 * CGFloat(row + 1))
         tileView.sideColors = tiles[index].sideColors
+        // add gestures
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         tileView.addGestureRecognizer(pan)
         let rotate = UIRotationGestureRecognizer(target: self, action: #selector(handleRotate))
         tileView.addGestureRecognizer(rotate)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        tileView.addGestureRecognizer(tap)
+        
         tileViews.append(tileView)
         view.addSubview(tileView)
     }
     
+    private func snap(_ value: CGFloat, to range: CGFloat, deadband: CGFloat, offset: CGFloat) -> CGFloat {
+        var snappedValue = value
+        let wrap = (value - offset).truncatingRemainder(dividingBy: range)  // modulo range
+        if abs(wrap) < deadband {
+            snappedValue -= wrap
+        } else if abs(wrap) > range - deadband {
+            snappedValue += (value - offset < 0 ? -1 : 1) * range - wrap
+        }
+        return snappedValue
+    }
+
     // snap tile view position to even tile-spacing increments when within panningDeadband
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
         if let tileView = recognizer.view as? TileView{
@@ -176,15 +192,20 @@ class ViewController: UIViewController {
         }
     }
     
-    private func snap(_ value: CGFloat, to range: CGFloat, deadband: CGFloat, offset: CGFloat) -> CGFloat {
-        var snappedValue = value
-        let wrap = (value - offset).truncatingRemainder(dividingBy: range)  // modulo range
-        if abs(wrap) < deadband {
-            snappedValue -= wrap
-        } else if abs(wrap) > range - deadband {
-            snappedValue += (value - offset < 0 ? -1 : 1) * range - wrap
+    // rotate tapped tile view 60 degrees (animated)
+    @objc func handleTap(recognizer: UITapGestureRecognizer) {
+        if let tileView = recognizer.view as? TileView {
+            puzzleCompleteButton.isHidden = true
+            view.bringSubviewToFront(tileView)
+            UIView.animate(withDuration: 0.2, animations: {
+                tileView.transform = CGAffineTransform(rotationAngle: tileView.angle + 60.CGrads)
+            }, completion: { _ in
+                if self.isPuzzleComplete() {
+                    self.puzzleCompleteButton.isHidden = false
+                    self.view.bringSubviewToFront(self.puzzleCompleteButton)
+                }}
+            )
         }
-        return snappedValue
     }
     
     private func isPuzzleComplete() -> Bool {
