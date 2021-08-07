@@ -104,9 +104,14 @@ class ViewController: UIViewController {
         tileView.addGestureRecognizer(pan)
         let rotate = UIRotationGestureRecognizer(target: self, action: #selector(handleRotate))
         tileView.addGestureRecognizer(rotate)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        tileView.addGestureRecognizer(tap)
-        
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        doubleTap.numberOfTapsRequired = 2
+        tileView.addGestureRecognizer(doubleTap)
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        singleTap.numberOfTapsRequired = 1
+        tileView.addGestureRecognizer(singleTap)
+        singleTap.require(toFail: doubleTap)  // don't fire singleTap, unless doubleTap fails
+
         tileViews.append(tileView)
         view.addSubview(tileView)
     }
@@ -192,13 +197,14 @@ class ViewController: UIViewController {
         }
     }
     
-    // rotate tapped tile view 60 degrees (animated)
+    // rotate tapped tile view +60 degrees for single-tap, -60 degrees for double-tap (animated)
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         if let tileView = recognizer.view as? TileView {
             puzzleCompleteButton.isHidden = true
             view.bringSubviewToFront(tileView)
             UIView.animate(withDuration: 0.2, animations: {
-                tileView.transform = CGAffineTransform(rotationAngle: tileView.angle + 60.CGrads)
+                let rotationAngle = tileView.angle + (recognizer.numberOfTapsRequired == 1 ? 60.CGrads : -60.CGrads)
+                tileView.transform = CGAffineTransform(rotationAngle: rotationAngle)
             }, completion: { _ in
                 if self.isPuzzleComplete() {
                     self.puzzleCompleteButton.isHidden = false
@@ -207,7 +213,7 @@ class ViewController: UIViewController {
             )
         }
     }
-    
+
     private func isPuzzleComplete() -> Bool {
         return isLoopColorThroughAllTileViews() && isAllTouchingTileViewsWithSameColor()
     }
