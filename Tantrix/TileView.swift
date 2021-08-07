@@ -31,7 +31,7 @@ class TileView: UIView {
     }
     
     var rotatedSideColors: [UIColor] {
-        let turnIncrements = Int(angle / 60.CGrads)
+        let turnIncrements = Int(round(angle / 60.CGrads))
         var rotatedSideColors = [UIColor]()
         for index in 0..<6 {
             let remainder = (index - turnIncrements) % 6
