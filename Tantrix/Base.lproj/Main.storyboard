@@ -40,14 +40,30 @@
                                     </label>
                                 </subviews>
                             </stackView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Goal: Form a single red loop" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dus-jp-f0F">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dus-jp-f0F">
                                 <rect key="frame" x="66" y="48" width="243.5" height="24"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Goal: Form a single ">
+                                        <attributes>
+                                            <font key="NSFont" metaFont="system" size="20"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content="red">
+                                        <attributes>
+                                            <color key="NSBackgroundColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" metaFont="system" size="20"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content=" loop">
+                                        <attributes>
+                                            <font key="NSFont" metaFont="system" size="20"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ixZ-0i-HKp">
-                                <rect key="frame" x="100.5" y="315.5" width="174" height="36"/>
+                                <rect key="frame" x="100.5" y="84" width="174" height="36"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <inset key="contentEdgeInsets" minX="10" minY="6" maxX="10" maxY="6"/>
@@ -66,11 +82,11 @@
                         <color key="backgroundColor" systemColor="systemGray3Color"/>
                         <constraints>
                             <constraint firstItem="HoW-6h-Ucr" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="48O-ey-rk2"/>
-                            <constraint firstItem="ixZ-0i-HKp" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="4Gz-h9-khc"/>
                             <constraint firstItem="HoW-6h-Ucr" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="4Sj-j9-QmG"/>
                             <constraint firstItem="ixZ-0i-HKp" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="LRz-cX-RoR"/>
                             <constraint firstItem="dus-jp-f0F" firstAttribute="top" secondItem="HoW-6h-Ucr" secondAttribute="bottom" constant="8" symbolic="YES" id="UNr-Ye-Wp2"/>
                             <constraint firstItem="dus-jp-f0F" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="V7e-IV-njb"/>
+                            <constraint firstItem="ixZ-0i-HKp" firstAttribute="top" secondItem="dus-jp-f0F" secondAttribute="bottom" constant="12" id="isk-qU-4Gs"/>
                         </constraints>
                     </view>
                     <connections>
