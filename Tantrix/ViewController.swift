@@ -235,7 +235,7 @@ class ViewController: UIViewController {
         repeat {
             let testTileLoopColorSides = testTileView.rotatedSideColors.indices.filter { testTileView.rotatedSideColors[$0] == loopColor }
             let loopColorSide = testTileLoopColorSides[0] == pastLoopColorSide ? testTileLoopColorSides[1] : testTileLoopColorSides[0]
-            // check if there is a neighboring tileView and if it has loopColor on the opposite side as testTileView (if so, continue cheking)
+            // check if there is a neighboring tileView and if it has loopColor on the opposite side as testTileView (if so, continue checking)
             if let neighboringTileView = neighborTo(testTileView, on: loopColorSide),
                neighboringTileView.rotatedSideColors[Tile<Any>.oppositeSide(loopColorSide)] == loopColor {
                 testTileView = neighboringTileView
@@ -252,7 +252,7 @@ class ViewController: UIViewController {
     private func isAllTouchingTileViewsWithSameColor() -> Bool {
         for tileView in tileViews {
             for side in 0..<6 {
-                // check if there is a neigboring tileView and if it has same color on opposite side as this tileView (if not return false)
+                // check if there is a neighboring tileView and if it has same color on opposite side as this tileView (if not return false)
                 if let neighboringTileView = neighborTo(tileView, on: side),
                    neighboringTileView.rotatedSideColors[Tile<Any>.oppositeSide(side)] != tileView.rotatedSideColors[side] {
                     return false
