@@ -129,7 +129,7 @@ class ViewController: UIViewController {
 
     // snap tile view position to even tile-spacing increments when within panningDeadband
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
-        if let tileView = recognizer.view as? TileView{
+        if let tileView = recognizer.view as? TileView {
             switch recognizer.state {
             case .began:
                 puzzleCompleteButton.isHidden = true
